@@ -2,8 +2,8 @@ version: 0.2
 
 env:
   parameter-store:
-    DOCKER_USER: kilingsx
-    DOCKER_PASSWORD: @!X$c1gHiCJU9UmY
+    DOCKER_USER: "kilingsx"
+    DOCKER_PASSWORD: "@!X$c1gHiCJU9UmY"
 
 phases:
   pre_build:
