@@ -9,7 +9,7 @@ env:
   variables:
     IMAGE_REPO_NAME: "ecs-training"
     AWS_DEFAULT_REGION: "ap-northeast-1"
-    CONTAINER_NAME: "	sample-ecs-training"
+    CONTAINER_NAME: "flask-demo-app"
     AWS_ACCOUNT_ID: "767398047154"
     IMAGE_TAG: "dev" #(dev,stg,prd)
     
