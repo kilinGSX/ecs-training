@@ -2,8 +2,8 @@ version: 0.2
 
 env:
   parameter-store:
-    DOCKER_USER: DOCKER_HUB_ID
-    DOCKER_PASSWORD: DOCKER_HUB_PASSWORD
+    DOCKER_USER: kilingsx
+    DOCKER_PASSWORD: MNoo*wJ1x&ZS@N#%
 
 phases:
   pre_build:
