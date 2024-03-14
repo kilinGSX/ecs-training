@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   parameter-store:
-    DOCKER_USER: "kilingsx"
+    DOCKER_USER: docker_id
     DOCKER_PASSWORD: docker_password
 
 phases:
