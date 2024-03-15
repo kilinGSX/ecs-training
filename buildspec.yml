@@ -6,7 +6,7 @@ env:
     DEPLOY_ENV: "dev" #(dev,stg,prd)  
     AWS_REGION: "ap-northeast-1"
     CONTAINER_NAME: "flask-demo-app"
-    PROJECT_NAME: "ecs-training"
+    PROJECT_NAME: "flask-demo-app"
     
 phases:
   pre_build:
