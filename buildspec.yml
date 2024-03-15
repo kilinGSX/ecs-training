@@ -2,25 +2,43 @@ version: 0.2
 
 env:
   variables:
-    IMAGE_REPO_NAME: "ecs-training"
-    AWS_DEFAULT_REGION: "ap-northeast-1"
+    ACCOUNT_ID: "767398047154"
+    DEPLOY_ENV: "dev" #(dev,stg,prd)  
+    AWS_REGION: "ap-northeast-1"
     CONTAINER_NAME: "flask-demo-app"
-    AWS_ACCOUNT_ID: "767398047154"
-    IMAGE_TAG: "dev" #(dev,stg,prd)  
+    PROJECT_NAME: "ecs-training"
     
 phases:
   pre_build:
     commands:
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-      - IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
+      - echo this is initiated by buildspec_${DEPLOY_ENV}_${CONTAINER_NAME}.yml
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com
+      - ECR_REPOSITORY=${PROJECT_NAME}/${DEPLOY_ENV}/${CONTAINER_NAME}
+      - REPOSITORY_URI=${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}
+      - IMAGE_TAG=$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - docker pull ${REPOSITORY_URI}:latest || true
+      
   build:
     commands:
-      - docker build -t tmp_tag .
-      - docker tag tmp_tag $IMAGE_URI:$IMAGE_TAG
+      - echo Build started on `date`
+      - echo Building app Docker image...
+      - |
+        printf '[{"name":"backend","imageUri":"%s"}]' \ #ここのbackendは${CONTAINER_NAME}使えないかも
+        $REPOSITORY_URI:$IMAGE_TAG \
+        > imagedefinitions.json
+      - |
+        docker build --cache-from ${REPOSITORY_URI}:latest \
+        -t ${CONTAINER_NAME} \
+        .
+        
   post_build:
     commands:
-      - docker push $IMAGE_URI:$IMAGE_TAG
-      - printf '[{"name":"%s","imageUri":"%s"}]' $CONTAINER_NAME $IMAGE_URI:$IMAGE_TAG:$IMAGE_TAG > imagedefinitions.json
+     - echo Pushing the Docker image...
+      - docker tag ${CONTAINER_NAME} ${REPOSITORY_URI}:${IMAGE_TAG}
+      - docker push ${REPOSITORY_URI}:${IMAGE_TAG}
+      - docker tag ${CONTAINER_NAME} ${REPOSITORY_URI}:latest
+      - docker push ${REPOSITORY_URI}:latest
 
 artifacts:
   files:
