@@ -23,7 +23,7 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building app Docker image...
-      - printf '[{"name":"%s","imageUri":"%s"}]' $CONTAINER_NAME $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$PROJECT_NAME:$CONTAINER_NAME  > imagedefinitions.json
+      - printf '\[{"name":"%s","imageUri":"%s"}\]'$CONTAINER_NAME $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
       - docker build --cache-from ${REPOSITORY_URI}:latest -t ${CONTAINER_NAME} .
         
   post_build:
