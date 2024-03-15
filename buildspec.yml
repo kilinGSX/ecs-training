@@ -1,10 +1,6 @@
 version: 0.2
 
 env:
-  parameter-store:
-    DOCKER_USER: docker_id
-    DOCKER_PASSWORD: docker_password
-    
   variables:
     IMAGE_REPO_NAME: "ecs-training"
     AWS_DEFAULT_REGION: "ap-northeast-1"
@@ -17,14 +13,15 @@ phases:
     commands:
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
       - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USER --password-stdin
+      - IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
   build:
     commands:
-      - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
-      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      - docker build -t tmp_tag .
+      - docker tag tmp_tag $IMAGE_URI:$IMAGE_TAG
   post_build:
     commands:
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
-      - printf '[{"name":"%s","imageUri":"%s"}]' $CONTAINER_NAME $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG  > imagedefinitions.json
+      - docker push $IMAGE_URI:$IMAGE_TAG
+      - printf '[{"name":"%s","imageUri":"%s"}]' $CONTAINER_NAME $IMAGE_URI:$IMAGE_TAG:$IMAGE_TAG > imagedefinitions.json
 
 artifacts:
   files:
