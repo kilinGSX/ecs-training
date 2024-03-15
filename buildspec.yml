@@ -23,7 +23,7 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building app Docker image...
-      - printf '\[{"name":"%s","imageUri":"%s"}\]'$CONTAINER_NAME $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - printf '[{"name":"flask-demo-app","imageUri":"767398047154.dkr.ecr.ap-northeast-1.amazonaws.com/flask-demo-app:latest"}]' > imagedefinitions.json
       - docker build --cache-from ${REPOSITORY_URI}:latest -t ${CONTAINER_NAME} .
         
   post_build:
