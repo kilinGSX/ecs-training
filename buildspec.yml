@@ -16,7 +16,7 @@ phases:
       - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com
       - ECR_REPOSITORY=${PROJECT_NAME}
       - REPOSITORY_URI=${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}
-
+      - IMAGE_TAG=$CODEBUILD_RESOLVED_SOURCE_VERSION
       - docker pull ${REPOSITORY_URI}:latest || true
       
   build:
@@ -31,8 +31,6 @@ phases:
      - echo Pushing the Docker image...
       - docker tag ${CONTAINER_NAME} ${REPOSITORY_URI}:${IMAGE_TAG}
       - docker push ${REPOSITORY_URI}:${IMAGE_TAG}
-      - docker tag ${CONTAINER_NAME} ${REPOSITORY_URI}:latest
-      - docker push ${REPOSITORY_URI}:latest
 
 artifacts:
   files:
