@@ -23,16 +23,9 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building app Docker image...
-      - |
-        printf '[{"name":"backend","imageUri":"%s"}]' \ 
-        $REPOSITORY_URI:$IMAGE_TAG \
-        > imagedefinitions.json
-      - |
-        docker build --cache-from ${REPOSITORY_URI}:latest \
-        -t ${CONTAINER_NAME} \
-        .
+      - printf '\[{"name":"backend","imageUri":"%s"}\]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - docker build --cache-from ${REPOSITORY_URI}:latest -t ${CONTAINER_NAME} .
         
-    #ここのbackendは${CONTAINER_NAME}使えないかも
   post_build:
     commands:
      - echo Pushing the Docker image...
