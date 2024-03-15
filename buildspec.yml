@@ -24,7 +24,7 @@ phases:
       - echo Build started on `date`
       - echo Building app Docker image...
       - |
-        printf '[{"name":"backend","imageUri":"%s"}]' \ #ここのbackendは${CONTAINER_NAME}使えないかも
+        printf '[{"name":"backend","imageUri":"%s"}]' \ 
         $REPOSITORY_URI:$IMAGE_TAG \
         > imagedefinitions.json
       - |
@@ -32,6 +32,7 @@ phases:
         -t ${CONTAINER_NAME} \
         .
         
+    #ここのbackendは${CONTAINER_NAME}使えないかも
   post_build:
     commands:
      - echo Pushing the Docker image...
