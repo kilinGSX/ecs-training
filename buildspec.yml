@@ -3,10 +3,10 @@ version: 0.2
 env:
   variables:
     ACCOUNT_ID: "767398047154"
-    DEPLOY_ENV: "dev" #(dev,stg,prd)  
+    DEPLOY_ENV: "dev" #(dev,stg,prd)
     AWS_REGION: "ap-northeast-1"
     CONTAINER_NAME: "flask-demo-app"
-    PROJECT_NAME: "flask-demo-app"
+    REPOSITORY_NAME: "flask-demo-app"
     
 phases:
   pre_build:
@@ -14,9 +14,10 @@ phases:
       - echo this is initiated by buildspec_${DEPLOY_ENV}_${CONTAINER_NAME}.yml
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com
-      - ECR_REPOSITORY=${PROJECT_NAME}
+      - ECR_REPOSITORY=${REPOSITORY_NAME}
       - REPOSITORY_URI=${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}
       - IMAGE_TAG=$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - echo $CODEBUILD_RESOLVED_SOURCE_VERSION
       - docker pull ${REPOSITORY_URI}:latest || true
       
   build:
@@ -24,12 +25,13 @@ phases:
       - echo Build started on `date`
       - echo Building app Docker image...
       - printf '[{"name":"flask-demo-app","imageUri":"767398047154.dkr.ecr.ap-northeast-1.amazonaws.com/flask-demo-app:latest"}]' > imagedefinitions.json
-      - docker build --cache-from ${REPOSITORY_URI}:latest -t ${CONTAINER_NAME} .
+      - docker build -t ${CONTAINER_NAME} .
         
   post_build:
     commands:
-     - echo Pushing the Docker image...
+      - echo Pushing the Docker image...
       - docker tag ${CONTAINER_NAME} ${REPOSITORY_URI}:${IMAGE_TAG}
+      - docker images
       - docker push ${REPOSITORY_URI}:${IMAGE_TAG}
 
 artifacts:
