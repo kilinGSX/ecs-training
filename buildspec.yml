@@ -31,7 +31,7 @@ phases:
     commands:
       - echo Pushing the Docker image...
       - docker tag ${CONTAINER_NAME} ${REPOSITORY_URI}:${IMAGE_TAG}
-      - docker images
+      - docker tag ${CONTAINER_NAME} ${REPOSITORY_URI}:latest
       - docker push ${REPOSITORY_URI}:latest
       - docker push ${REPOSITORY_URI}:${IMAGE_TAG}
 
