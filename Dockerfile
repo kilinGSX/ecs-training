@@ -4,6 +4,7 @@ WORKDIR /src
 # 現在のディレクトリのファイルを /srcディレクトリ(コンテナ上)に追加
 ADD app.py .
 # flasknのインストール
+RUN pip install --upgrade pip
 RUN pip install flask
 #　実行
 CMD ["python", "app.py"]
